@@ -6,49 +6,57 @@ import static java.lang.Integer.MAX_VALUE;
 
 public class CodeProblem2 {
     public static void main(String[] args) { //main ui
+        CodeProblem2 var = new CodeProblem2();
         Scanner keyboard = new Scanner(System.in);
         System.out.println("Please input a binary code, separated by , with no spaces.");
         String unformattedCode = keyboard.next();
 
-        int minDist = hammingDistance(unformattedCode.split(",")); //calculating minimum distance for use later
-        if (minDist - 1 <= 0) { //ensures codes are large enough to actuall perform analysis on
+        int minDist = var.hammingDistance(unformattedCode.split(",")); //calculating minimum distance for use later
+        if (minDist - 1 <= 0) { //ensures codes are large enough to actually perform analysis on
             System.out.println("Codewords are too similar to detect any errors, or the code you entered contained input errors (inconsistent length, letters, spaces, etc).");
         } else {
-            String[][] code = format(unformattedCode); //formats input
+            String[][] code = var.format(unformattedCode); //formats input
 
             System.out.println("Now, please input a codeword that is received.");
             String[] inputCode = keyboard.next().split("");
 
-            String[][][] values = positionalErrors(code, inputCode, minDist); //finds the positions of any errors in the code, up to d(C) - 1
+            String[][][] values = var.positionalErrors(code, inputCode, minDist); //finds the positions of any errors in the code, up to d(C) - 1
 
-            assert values != null;
-            if (values[0][0][0].equals("3")) { //valid codeword was entered
-                System.out.println("That is a valid codeword!");
-            } else if (values[0][0][0].equals("1")) { //outputs the positions that have errors in them
-                System.out.println("The code you entered contained errors. Here is the corrected code: ");
-                for (String[] corrected : values[1]) {
-                    for (String correctedBits : corrected)
-                        System.out.print(" " + correctedBits);
-                }
-            } else { //outputs the possible positions that errors have occured
-                System.out.println("The code you entered contains errors in these positions: ");
-                for (String[] bitstrings : values[1]) {
-                    for (String position : bitstrings) {
-                        System.out.print(" " + position);
+            switch (values[0][0][0]) {
+                case "0":  //valid codeword was entered
+                    System.out.println("That is a valid codeword!");
+                    break;
+                case "1":  //outputs the possible positions that errors could have occured
+                    System.out.println("The code you entered contains errors in these positions: ");
+                    for (String[] bitstrings : values[1]) {
+                        for (String position : bitstrings) {
+                            System.out.print(" " + position);
+                        }
+                        System.out.println(" ");
                     }
-                    System.out.println(" ");
-                }
+                    break;
+                case "2":  //outputs the positions that have errors in them
+                    System.out.println("The code you entered contained errors. Here is the corrected code: ");
+                    for (String[] corrected : values[1]) {
+                        for (String correctedBits : corrected)
+                            System.out.print(" " + correctedBits);
+                    }
+                    break;
+                case "3":
+                    System.out.print("That codeword is not part of the original code C and also has errors > k - 1 where k is the minimum distance of code C");
+                    break;
             }
         }
     }
 
-    private static String[][][] positionalErrors(String[][] code, String[] inputCode, int minDist) { //supposed to find the positions of d(C) - 1 errors but is currently correcting (d(C) - 1)/2 errors
+    public String[][][] positionalErrors(String[][] code, String[] inputCode, int minDist) { //finds the positions of up to d(C) - 1 errors or corrects (d(C) - 1)/2 errors, whichever is applicable
         int minWeight = MAX_VALUE;
-        List<String[]> nearest = new ArrayList<>();
+        CodeProblem2 var = new CodeProblem2();
+        List<String[]> nearest = new ArrayList<>(); //used to store all the possible error positions
         String[] nearestNeighbor = new String[0]; //nearest codeword to the input code
 
         for (String[] word : code) { //iterates through whole inputted code, finding the minimum weight
-            int temp = weight(word, inputCode);
+            int temp = var.weight(word, inputCode);
             if (temp < minWeight) {
                 minWeight = temp;
                 nearestNeighbor = word;
@@ -56,32 +64,36 @@ public class CodeProblem2 {
         }
 
         for (String[] neighbor : code) { //finds all of the nearest neighbors
-            int temp = weight(neighbor, inputCode);
+            int temp = var.weight(neighbor, inputCode);
             if (temp == minWeight)
                 nearest.add(neighbor);
         }
 
-        String[][] errors = new String[nearest.size()][];//potential return value
+//        Quick reminder of code values: returning values[0] = 0 means a valid codeword was entered,
+//        1 means the positions of errors can be detected, 2 means errors can be corrected,
+//        and 3 means the errors are out of the scope of the code.
+
+        String[][] errors = new String[nearest.size()][]; //potential return value
         if (minWeight == 0) { //check for validity
-            System.out.println("That is a valid codeword!");
-            return null;
+            return new String[][][]{{{"0"}}, {{""}}};
         } else if (minWeight <= (int) Math.floor((minDist - 1.0) / 2.0)) { //ensures we are within nearest neighbor thresholds via the sphere-packing bound
-            return new String[][][]{{{"1"}}, {nearestNeighbor}};
+            return new String[][][]{{{"2"}}, {nearestNeighbor}};
         } else if (minWeight <= minDist - 1) { //ensures we are within error detecting thresholds
             for (int i = 0; i < nearest.size(); i++) {
                 String[] errorPos = new String[code[0].length]; //temporary array
                 for (int j = 0; j < code[0].length; j++) {
-                    errorPos[j] = "" + ((Integer.parseInt(nearest.get(i)[j]) + Integer.parseInt(inputCode[i])) % 2); //mod 2 arithmetic instead of XOR
+                    errorPos[j] = "" + ((Integer.parseInt(nearest.get(i)[j]) + Integer.parseInt(inputCode[j])) % 2); //mod 2 arithmetic instead of XOR
                 }
                 errors[i] = errorPos;
             }
-            return new String[][][]{{{"0"}}, errors};
+            return new String[][][]{{{"1"}}, errors};
         }
 
         return new String[][][]{{{"3"}}, {{""}}};
     }
+    //in hindsight, using 3d arrays in order to return an array and a string was very unecessary, but it works so im keeping it
 
-    private static int weight(String[] input1, String[] input2) { //finds the weight of two codewords
+    public int weight(String[] input1, String[] input2) { //finds the weight of two codewords
         int weight = 0;
         for (int i = 0; i < input1.length; i++) {
             if (Integer.parseInt(input1[i]) + Integer.parseInt(input2[i]) % 2 == 1)
@@ -90,7 +102,7 @@ public class CodeProblem2 {
         return weight;
     }
 
-    private static String[][] format(String a) { //formats our input code as a 2-d array so we can easily perform operations on it
+    public String[][] format(String a) { //formats our input code as a 2-d array so we can easily perform operations on it
         String[] codes = a.split(",");
         String[][] formattedCode = new String[codes.length][codes[0].length()];
         for (int i = 0; i < codes.length; i++) {
@@ -101,7 +113,7 @@ public class CodeProblem2 {
         return formattedCode;
     }
 
-    public static int hammingDistance(String[] a) { //finds the minimum distance, could be done more efficiently now that the input is formatted but im lazy
+    public int hammingDistance(String[] a) { //finds the minimum distance, could be done more efficiently now that the input is formatted but im lazy
         int b = 0;
         for (int i = 0; i < a.length; i++) {
             for (int j = 0; j < a.length; j++) {
