@@ -1,3 +1,9 @@
+Quick preface, I have both coding problems and the exercises in a git repository located here: https://github.com/toxicliam/CIS-1166-Final-Project
+It's there in case you wanted to see the test files I used, since that could be easier than manually typing in test cases by hand + you could easily 
+replicate test functions if you have your own set of binary codes that you don't want to type by hand
+Enjoy!
+-Liam
+
 1.
 	a) no
 	b) yes
@@ -27,19 +33,19 @@
 
 6.
 	minimum distance = 4, show that 1 bit errors can be corrected and 2 bits can be detected.
-	d(C) >= k + 1 where k is the number of errors that can be detected and d(C) is the minimum distance of the code. Since d(C) is 4, then 3 >= k, and since 2 is less than 3 then 2 errors can be detected in this case.
+	d(C) >= k + 1 where k is the number of errors that can be detected and d(C) is the minimum distance of the code. Since d(C) is 4, then 3 >= k, and since 2 is less than 3 then 2 errors can be detected in this case. 
 	Similarly, d(C) >= 2k + 1 where k is the number of errors that can be corrected and d(C) is again the minimum distance. Therefore, 3/2 >= k -> 2 > 3/2 > 1 (errors can only happen in whole number increments) and 1 >= 1 is a true statement, so 1 error can be corrected.
 
 7.
 	2^n/(C(n,0) -> C(n,k))
 	n = 9, 5 = 2k + 1 -> k = 2
 	2^9/(C(9,0) + C(9,1) + C(9,2)) = 256/46.
-	number of codewords <= 256/46  11 < 256/46 < 12 (the number of codes can only be a whole number), therefore the upper bound is 11.
+	number of codewords <= 256/46  11 < 256/46 < 12 (the number of codes can only be a whole number), therefore the upper bound is 11. 
 
-8.
+8. 
 	Show that whenever n is an odd positive integer, the binary code consisting
 	of the two bit strings of length n containing all 0s or all 1s is a perfect code.
-
+	
 9.
 	w(x+y) is the number of positions that both x and y have a 1. Therefore, w(x) + w(y) is going to add the number of places that x has a 1 and the number of places that y has a 1. However, this double counts any position that both x and y have a 1.
 	So, by subtracting 2m (m is the number of places where x and y both have 1) you remove the double counts and are left with the amount of places that x and y have 1s.
@@ -51,7 +57,7 @@
 
 	G = (I3 | A)
 	H = (B | I4-3)
-
+	
 	H = 1 1 1 1
 
 11.
@@ -60,8 +66,8 @@
 	    0 0 1 0 0 1 0 0 1
 
 	H = 1 0 0 1 0 0 0 0 0
-	    0 1 0 0 1 0 0 0 0
-	    0 0 1 0 0 1 0 0 0
+	    0 1 0 0 1 0 0 0 0 
+	    0 0 1 0 0 1 0 0 0 
 	    1 0 0 0 0 0 1 0 0
 	    0 1 0 0 0 0 0 1 0
 	    0 0 1 0 0 0 0 0 1
@@ -87,7 +93,7 @@
 	    0 1 0 1 1
 
 14.
-	G = 1 0 0 0 0 1 1
+	G = 1 0 0 0 0 1 1 
 	    0 1 0 0 1 0 1
 	    0 0 1 0 1 1 0
 	    0 0 0 1 1 1 1
@@ -95,12 +101,13 @@
 	C = 10000111, 0100101, 0010110, 0001111, 1100110, 1010101, 1001100, 0110011, 0101010, 0011001, 1110000, 0111100, 1011010, 1101001, 1111111, 0000000
 
 15.
-
-	a) Since we assume no other errors, the minimum distance d is the amount of unique characters that separates each code. Therefore, changing d characters renders a code unreadable.
-	However, erasing d-1 characters out of a bitstring means that the bits that are left in the string are closer to one of the codewords in the code, because d - 1 < d. Thereforce, the
+	
+	a) Since we assume no other errors, the minimum distance d is the amount of unique characters that separates each code. Therefore, changing d characters renders a code unreadable. 
+	However, erasing d-1 characters out of a bitstring means that the bits that are left in the string are closer to one of the codewords in the code, because d - 1 < d. Thereforce, the 
 	string that your erased string that your erased string resembles most is the nearest neighbor, therefore you can decode the erased string.
 
 	b) errors that can be corrected with t errors and d minimum distance t = (d-1)/2
 	   errors that can be corrected with r erasures and d minimum distance r = d - 1
 	   d = r + 1 ||| d = 2t + 1
 	   d = (2t + r + 2)-1 (-1 to ensure there is a nearest neighbor)
+	
